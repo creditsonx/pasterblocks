@@ -1,31 +1,10 @@
+// Remove the test panel and utility functions
 import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import useLeaderboard from '../../hooks/useLeaderboard';
 import { calculatePayout, getRewardTier } from '../../utils/leaderboardUtils';
 import Button from '../ui/Button';
 import type { PlayerScore } from '../../types/leaderboard';
-import leaderboardApi from '../../utils/leaderboardApiClient';
-
-// Utility functions for test panel
-const generateRandomScore = () => {
-  return Math.floor(Math.random() * 15000) + 5000;
-};
-
-const generateRandomLevel = () => {
-  return Math.floor(Math.random() * 20) + 1;
-};
-
-const generateRandomLines = (level: number) => {
-  return level * (Math.floor(Math.random() * 5) + 5);
-};
-
-const generateRandomName = () => {
-  const prefixes = ['Cool', 'Super', 'Mega', 'Ultra', 'Epic', 'Pro', 'Master', 'Ninja', 'Crypto', 'Block'];
-  const suffixes = ['Player', 'Gamer', 'Tetris', 'Winner', 'Champion', 'Legend', 'Hero', 'Warrior', 'Dropper', 'Builder'];
-  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  return `${prefix}${suffix}${Math.floor(Math.random() * 100)}`;
-};
 
 const Leaderboard = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -73,6 +52,21 @@ const Leaderboard = () => {
     setCurrentPage(0);
   }, [topPlayers.length]);
 
+  // Set up periodic refresh every 10 minutes
+  useEffect(() => {
+    // Initial refresh
+    refreshLeaderboard();
+
+    // Set up interval for refreshing every 10 minutes
+    const intervalId = setInterval(() => {
+      refreshLeaderboard();
+      console.log('Leaderboard refreshed automatically (10-minute interval)');
+    }, 10 * 60 * 1000);
+
+    // Clean up on unmount
+    return () => clearInterval(intervalId);
+  }, [refreshLeaderboard]);
+
   const handleProcessPayouts = useCallback(async () => {
     if (!adminToken) return;
     const success = await processPayout(adminToken);
@@ -87,6 +81,14 @@ const Leaderboard = () => {
     return isNaN(date.getTime())
       ? 'Invalid date'
       : date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
+  // Format Solana address for display
+  const formatAddress = (address: string) => {
+    if (!address) return 'Unknown';
+    if (address.length < 10) return address;
+
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
 
   return (
@@ -127,11 +129,22 @@ const Leaderboard = () => {
 
           {visiblePlayers.map((player: PlayerScore, index: number) => {
             const rank = currentPage * pageSize + index + 1;
+
+            // Format the player's display name
+            let displayText = player.displayName;
+
+            // If it's a wallet address, format it nicely
+            if (player.walletAddress && (!player.displayName || player.displayName === player.walletAddress)) {
+              displayText = formatAddress(player.walletAddress);
+            } else if (player.playerAddress && (!player.displayName || player.displayName === player.playerAddress)) {
+              displayText = formatAddress(player.playerAddress);
+            }
+
             return (
               <div
-                key={`${player.playerAddress}-${rank}`}
+                key={`${player.playerAddress || player.walletAddress}-${rank}`}
                 className={`grid grid-cols-12 items-center text-sm px-2 py-2 rounded-md ${
-                  publicKey && player.playerAddress === publicKey.toString()
+                  publicKey && (player.playerAddress === publicKey.toString() || player.walletAddress === publicKey.toString())
                     ? 'bg-violet-900/30 border border-violet-500/50'
                     : rank % 2 === 0
                     ? 'bg-gray-800/50'
@@ -151,7 +164,7 @@ const Leaderboard = () => {
                   )}
                 </div>
                 <div className="col-span-5 truncate font-semibold text-gray-300">
-                  {player.displayName || `Player-${player.playerAddress.slice(0, 4)}`}
+                  {displayText}
                 </div>
                 <div className="col-span-3 text-right font-mono">
                   {player.score >= 10000 ? (
@@ -193,213 +206,8 @@ const Leaderboard = () => {
               Next
             </Button>
           </div>
-
-          {/* Admin payout section (only shown to make it easy to test) */}
-          <div className="mt-4 pt-4 border-t border-gray-700">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-sm text-gray-400">Admin Actions</div>
-              <button
-                onClick={() => setShowPayoutModal(true)}
-                className="text-xs bg-purple-700 px-2 py-1 rounded hover:bg-purple-600 transition-colors"
-              >
-                Process Payouts
-              </button>
-            </div>
-            {payoutResult && (
-              <div className="text-xs mt-2 p-2 bg-black/50 rounded">
-                {payoutResult}
-              </div>
-            )}
-          </div>
         </div>
       )}
-
-      {showPayoutModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50">
-          <div className="bg-gray-900 border border-violet-500 rounded-lg p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">Process Payouts</h3>
-            <p className="text-gray-300 mb-4">
-              This will distribute $PASTERBLOCKS rewards to players on the leaderboard.
-              Are you sure you want to proceed?
-            </p>
-            <p className="text-xs text-gray-400 mb-4">
-              Rewards are distributed every 24 hours.
-            </p>
-
-            <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-1">
-                Admin Token:
-              </label>
-              <input
-                type="password"
-                value={adminToken}
-                onChange={(e) => setAdminToken(e.target.value)}
-                className="w-full bg-gray-800 text-white px-3 py-2 rounded border border-gray-700 focus:border-violet-500 focus:outline-none"
-                placeholder="Enter admin token"
-              />
-            </div>
-
-            <div className="flex space-x-3">
-              <button
-                onClick={() => setShowPayoutModal(false)}
-                className="flex-1 border border-gray-700 text-gray-400 px-4 py-2 rounded hover:bg-gray-800 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleProcessPayouts}
-                disabled={processingPayout || !adminToken}
-                className={`flex-1 px-4 py-2 rounded ${
-                  processingPayout || !adminToken
-                    ? 'bg-gray-700 cursor-not-allowed'
-                    : 'bg-violet-700 hover:bg-violet-600'
-                } transition-colors`}
-              >
-                {processingPayout ? 'Processing...' : 'Confirm'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Test Panel - For development/admin use */}
-      <div className="mt-6 pt-4 border-t border-gray-700">
-        <div className="flex justify-between items-center mb-2">
-          <div className="text-sm text-gray-400">Test Panel</div>
-          <Button
-            onClick={async () => {
-              // Generate a random score
-              const score = generateRandomScore();
-              const level = generateRandomLevel();
-              const lines = generateRandomLines(level);
-              const displayName = generateRandomName();
-              const walletAddress = `test${Date.now().toString().slice(-6)}`;
-
-              try {
-                // Submit to Firebase
-                await leaderboardApi.submitScore({
-                  walletAddress,
-                  displayName,
-                  score,
-                  level,
-                  lines,
-                  gameTime: Math.floor(Math.random() * 300) + 60, // Random game time between 1-6 minutes
-                  pasterBlocksEarned: Math.floor(score / 100)
-                });
-
-                // Refresh leaderboard
-                refreshLeaderboard();
-
-                console.log(`Test score submitted: ${score} by ${displayName}`);
-              } catch (error) {
-                console.error('Error submitting test score:', error);
-              }
-            }}
-            className="text-xs py-1 px-3"
-            variant="secondary"
-          >
-            Add Random Score
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 mt-2">
-          <Button
-            onClick={async () => {
-              // Add 5 random scores at once
-              for (let i = 0; i < 5; i++) {
-                const score = generateRandomScore();
-                const level = generateRandomLevel();
-                const lines = generateRandomLines(level);
-                const displayName = generateRandomName();
-                const walletAddress = `test${Date.now().toString().slice(-6)}${i}`;
-
-                try {
-                  // Submit to Firebase with slight delay to avoid conflicts
-                  await new Promise(resolve => setTimeout(resolve, i * 100));
-
-                  await leaderboardApi.submitScore({
-                    walletAddress,
-                    displayName,
-                    score,
-                    level,
-                    lines,
-                    gameTime: Math.floor(Math.random() * 300) + 60,
-                    pasterBlocksEarned: Math.floor(score / 100)
-                  });
-
-                  console.log(`Test score ${i+1}/5 submitted: ${score} by ${displayName}`);
-                } catch (error) {
-                  console.error(`Error submitting test score ${i+1}/5:`, error);
-                }
-              }
-
-              // Refresh leaderboard after all scores submitted
-              setTimeout(() => {
-                refreshLeaderboard();
-                console.log('Leaderboard refreshed after adding 5 scores');
-              }, 1000);
-            }}
-            className="text-xs py-1"
-            variant="secondary"
-          >
-            Add 5 Scores
-          </Button>
-
-          <Button
-            onClick={async () => {
-              // Add 10 high scores (top tier)
-              for (let i = 0; i < 10; i++) {
-                // Generate high score (15k-30k)
-                const score = Math.floor(Math.random() * 15000) + 15000;
-                const level = Math.floor(Math.random() * 10) + 15; // High level 15-25
-                const lines = level * (Math.floor(Math.random() * 5) + 10);
-                const displayName = `TopPlayer${Math.floor(Math.random() * 100)}`;
-                const walletAddress = `highscore${Date.now().toString().slice(-6)}${i}`;
-
-                try {
-                  // Submit to Firebase with slight delay to avoid conflicts
-                  await new Promise(resolve => setTimeout(resolve, i * 100));
-
-                  await leaderboardApi.submitScore({
-                    walletAddress,
-                    displayName,
-                    score,
-                    level,
-                    lines,
-                    gameTime: Math.floor(Math.random() * 300) + 300, // Longer game time for high scores
-                    pasterBlocksEarned: Math.floor(score / 50) // More rewards for high scores
-                  });
-
-                  console.log(`High score ${i+1}/10 submitted: ${score} by ${displayName}`);
-                } catch (error) {
-                  console.error(`Error submitting high score ${i+1}/10:`, error);
-                }
-              }
-
-              // Refresh leaderboard after all scores submitted
-              setTimeout(() => {
-                refreshLeaderboard();
-                console.log('Leaderboard refreshed after adding 10 high scores');
-              }, 1500);
-            }}
-            className="text-xs py-1"
-            variant="secondary"
-          >
-            Add High Scores
-          </Button>
-
-          <Button
-            onClick={() => {
-              refreshLeaderboard();
-              console.log('Manually refreshed leaderboard');
-            }}
-            className="text-xs py-1"
-            variant="primary"
-          >
-            Refresh Leaderboard
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };

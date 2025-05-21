@@ -2,6 +2,44 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, get, push, query, orderByChild, limitToLast } from 'firebase/database';
 import firebaseConfig from './firebaseConfig';
 
+// Sample Solana addresses for placeholders
+const SOLANA_ADDRESSES = [
+  'FjPHBQZvN7SJ3iP3BKiYVdyXCqo2dqYNAX6jryC44v8r',
+  'CUNrRfUaSzxj6yAcVw3GZyVnR4o4qJxprKWjbucpHvKc',
+  'DkzFBCj5N6sAV4fDk3UNJHHM8SPcHLZpxGkENJ4Y1bAF',
+  'GXkMwheVGxHsAJXZ1mPEXUKg8i81GQFa81jT9ktTvjft',
+  'E5J7xdEVZxzGDPCh8rxAFGqi6ANC8sY1K8KpphqXnxnr',
+  '2XGHgAGK9JVTGa3tXSZAK3ao35mEBL1awipKnDKrLQS5',
+  'FNDGe7HUWj6uGPHgZmupMWAy3H6KWXUD13BzWcKgRgtJ',
+  'AK5Ah3MxYXWfMXkhbfSQGU8ntKKvuW1jvhfHgnqhSJp4',
+  'GYvtxJecPbBYbwGdvZNR4ZMEYXvG3cd7uGhysRKzxsM5',
+  'HdMRfJLsTYuZgdXvnGphshCbP3U9Fsj9aoKUiSsbxpwL',
+  'BxLZRCvQCG7iAjCnbKp5xvGR9ZtWqnKcTvQUDFfnUhS5',
+  '9ipzm9Cj2QHLDVMNSkRfLQJd7VCWiqeqpNLB97VpCcCB',
+  '6Df9JWpXz8a7hqG5kxNSPESjq9dMgHkgkZMqx17S78DG',
+  'Gu5sojJKQunPt7ete6HjhqhQUQyXFuunL54VC8JPtmGf',
+  'GGe2UMCj7N9mMbobUyFqjfLCtJiuKDEpvhkRkBgsDTw1'
+];
+
+// Sample display names
+const PLAYER_NAMES = [
+  'SolanaWhale',
+  'TetraMaster',
+  'CryptoGamer',
+  'BlockDropper',
+  'PBKing',
+  'Bloxfinity',
+  'SolTetra',
+  'PasterChamp',
+  'BlockMaster',
+  'TetrisLegend',
+  'SolStacker',
+  'ChainGamer',
+  'CubeStacker',
+  'BlockBuilder',
+  'PBCollector'
+];
+
 // Initialize Firebase
 console.log('Initializing Firebase with config:', {
   projectId: firebaseConfig.projectId,
@@ -13,63 +51,57 @@ const database = getDatabase(app);
 
 console.log('Firebase initialized successfully');
 
-// Add some test data if the database is empty
-const initializeTestData = async () => {
+// Add placeholder data if the database is empty
+const initializePlaceholderData = async () => {
   try {
-    console.log('Checking if test data needs to be initialized...');
+    console.log('Checking if placeholder data needs to be initialized...');
     const scoresRef = ref(database, 'scores');
     const snapshot = await get(scoresRef);
 
     if (!snapshot.exists() || snapshot.size === 0) {
-      console.log('No existing scores found, adding test data');
+      console.log('No existing scores found, adding placeholder data');
 
-      // Add some test scores
-      const testScores = [
-        {
-          walletAddress: 'test1',
-          displayName: 'TestPlayer1',
-          score: 10000,
-          level: 10,
-          lines: 50,
-          verified: true,
-          timestamp: Date.now() - 1000000
-        },
-        {
-          walletAddress: 'test2',
-          displayName: 'TestPlayer2',
-          score: 8500,
-          level: 8,
-          lines: 40,
-          verified: true,
-          timestamp: Date.now() - 900000
-        },
-        {
-          walletAddress: 'test3',
-          displayName: 'TestPlayer3',
-          score: 7200,
-          level: 7,
-          lines: 35,
-          verified: true,
-          timestamp: Date.now() - 800000
-        }
-      ];
+      // Create placeholder scores using Solana addresses
+      for (let i = 0; i < SOLANA_ADDRESSES.length; i++) {
+        const walletAddress = SOLANA_ADDRESSES[i];
+        const displayName = PLAYER_NAMES[i % PLAYER_NAMES.length];
 
-      for (const score of testScores) {
+        // Generate a score inverse to index (higher index = lower score)
+        // This gives us a nice distribution of scores
+        const baseScore = 30000 - (i * 1500);
+        // Add some randomness
+        const score = baseScore + Math.floor(Math.random() * 1000);
+
+        const level = Math.floor(score / 1000); // Roughly level based on score
+        const lines = level * 5 + Math.floor(Math.random() * 10);
+
         const newScoreRef = push(scoresRef);
-        await set(newScoreRef, score);
+        await set(newScoreRef, {
+          walletAddress,
+          displayName,
+          score,
+          level,
+          lines,
+          verified: true,
+          timestamp: Date.now() - (i * 3600000), // Stagger timestamps
+          rewards: {
+            claimed: false,
+            amount: 0
+          }
+        });
       }
 
-      console.log('Test data added successfully');
+      console.log('Placeholder data added successfully');
     } else {
-      console.log('Database already has scores, skipping test data');
+      console.log('Database already has scores, skipping placeholder data');
     }
   } catch (error) {
-    console.error('Error initializing test data:', error);
+    console.error('Error initializing placeholder data:', error);
   }
 };
 
-// Initialize test data
-initializeTestData();
+// Initialize placeholder data
+initializePlaceholderData();
 
 /**
  * Saves a player's score to the Firebase leaderboard

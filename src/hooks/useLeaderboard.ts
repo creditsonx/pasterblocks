@@ -16,6 +16,18 @@ const MOCK_PLAYER_NAMES = [
   'ChainPlayer', 'MintMaster', 'PasterFan', 'BlockchainGamer'
 ];
 
+// Helper to randomly adjust scores for demo/refresh
+function addRandomScoreVariation(players: PlayerScore[]): PlayerScore[] {
+  return players.map(player => {
+    // Randomly add or subtract up to 100 points (simulate activity)
+    const variation = Math.floor(Math.random() * 201) - 100;
+    return {
+      ...player,
+      score: Math.max(0, player.score + variation)
+    };
+  });
+}
+
 export const useLeaderboard = () => {
   const { publicKey } = useWallet();
   const [state, setState] = useState<LeaderboardState>({
@@ -74,8 +86,11 @@ export const useLeaderboard = () => {
             ];
           }
 
+          // Add random score variation for demo/refresh
+          const randomizedPlayers = addRandomScoreVariation(response.data);
+
           setState({
-            topPlayers: response.data,
+            topPlayers: randomizedPlayers,
             loading: false,
             error: null,
             usingLocalStorage: false
@@ -104,8 +119,11 @@ export const useLeaderboard = () => {
 
       // Fallback to local storage if Firebase is not available
       console.log('Loading scores from local storage');
-      const topPlayers = getTopPlayers();
+      let topPlayers = getTopPlayers();
       console.log(`Loaded ${topPlayers.length} scores from local storage`);
+
+      // Add random score variation for demo/refresh
+      topPlayers = addRandomScoreVariation(topPlayers);
 
       setState({
         topPlayers,
@@ -125,13 +143,20 @@ export const useLeaderboard = () => {
     }
   }, []);
 
+  // Set up periodic refresh every 10 minutes with random score variations
   useEffect(() => {
+    // Initial refresh
     fetchLeaderboard();
 
-    // Set up a refresh interval - refresh every 30 seconds
-    const intervalId = setInterval(fetchLeaderboard, 30000);
+    // Set up interval for refreshing every 10 minutes
+    const intervalId = setInterval(() => {
+      console.log('Automatically refreshing leaderboard (10-minute interval)');
 
-    // Clean up on component unmount
+      // Fetch the latest data
+      fetchLeaderboard();
+    }, 10 * 60 * 1000);
+
+    // Clean up on unmount
     return () => clearInterval(intervalId);
   }, [fetchLeaderboard]);
 
