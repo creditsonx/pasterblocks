@@ -194,7 +194,7 @@ const Leaderboard = () => {
       ) : (
         <div className="mt-2 space-y-3">
           <div className="flex justify-between items-center mb-3">
-            <div className="text-sm text-purple-300 font-semibold flex items-center">
+            <div className="text-sm font-semibold flex items-center">
               <span className="bg-violet-500/30 py-1 px-3 rounded-full text-white">Top 15</span>
               {forceShowPlaceholderData && loading ? (
                 <span className="ml-2 text-xs text-gray-400">(Preview Data)</span>
@@ -207,15 +207,15 @@ const Leaderboard = () => {
             )}
           </div>
 
-          {/* Header row */}
-          <div className="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-400 py-2 border-b border-gray-800">
-            <div className="col-span-1 pl-2">#</div>
-            <div className="col-span-5">Wallet</div>
-            <div className="col-span-3 text-right pr-2">Score</div>
-            <div className="col-span-3 text-right pr-2">$PB Reward</div>
+          {/* Header row with better spacing */}
+          <div className="grid grid-cols-11 text-xs font-semibold text-gray-400 py-2 border-b border-gray-800">
+            <div className="col-span-1 pl-2 min-w-[32px]">#</div>
+            <div className="col-span-4 pl-1 min-w-[120px]">Wallet</div>
+            <div className="col-span-3 text-right min-w-[80px]">Score</div>
+            <div className="col-span-3 text-right pr-2 min-w-[100px]">$PB Reward</div>
           </div>
 
-          {/* Player rows */}
+          {/* Player rows with better spacing */}
           <div className="space-y-3">
             {visiblePlayers.map((player: PlayerScore, index: number) => {
               const rank = currentPage * pageSize + index + 1;
@@ -226,7 +226,7 @@ const Leaderboard = () => {
               return (
                 <div
                   key={`${player.playerAddress || player.walletAddress}-${rank}`}
-                  className={`grid grid-cols-12 gap-2 items-center text-sm px-3 py-3.5 rounded-md ${
+                  className={`grid grid-cols-11 items-center text-sm px-3 py-4 rounded-md ${
                     publicKey && (player.playerAddress === publicKey.toString() || player.walletAddress === publicKey.toString())
                       ? 'bg-violet-900/30 border border-violet-500/50'
                       : rank % 2 === 0
@@ -234,7 +234,8 @@ const Leaderboard = () => {
                       : ''
                   }`}
                 >
-                  <div className="col-span-1">
+                  {/* Rank column */}
+                  <div className="col-span-1 flex justify-center min-w-[32px]">
                     {rank <= 15 && (
                     <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs bg-gradient-to-r ${getRewardTier(rank).color} text-white font-bold`}>
                       {rank}
@@ -246,10 +247,14 @@ const Leaderboard = () => {
                       </span>
                     )}
                   </div>
-                  <div className="col-span-5 truncate font-mono text-gray-300 pl-1">
+
+                  {/* Wallet column */}
+                  <div className="col-span-4 truncate font-mono text-gray-300 pl-2 min-w-[120px]">
                     {displayText}
                   </div>
-                  <div className="col-span-3 text-right font-mono pr-1">
+
+                  {/* Score column */}
+                  <div className="col-span-3 text-right font-mono pr-3 min-w-[80px]">
                     {player.score >= 10000 ? (
                       <span className={`bg-clip-text text-transparent bg-gradient-to-r ${getRewardTier(rank).color}`}>
                         {player.score.toLocaleString()}
@@ -258,7 +263,9 @@ const Leaderboard = () => {
                       player.score.toLocaleString()
                     )}
                   </div>
-                  <div className="col-span-3 text-right text-xs pr-2">
+
+                  {/* Reward column */}
+                  <div className="col-span-3 text-right text-xs pr-2 min-w-[100px]">
                     {rank <= 15 ? (
                       <span className="text-yellow-400 font-semibold whitespace-nowrap">
                         {calculatePayout(rank).toLocaleString()} $PB
