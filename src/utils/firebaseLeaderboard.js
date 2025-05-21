@@ -3,8 +3,73 @@ import { getDatabase, ref, set, get, push, query, orderByChild, limitToLast } fr
 import firebaseConfig from './firebaseConfig';
 
 // Initialize Firebase
+console.log('Initializing Firebase with config:', {
+  projectId: firebaseConfig.projectId,
+  databaseURL: firebaseConfig.databaseURL
+});
+
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+console.log('Firebase initialized successfully');
+
+// Add some test data if the database is empty
+const initializeTestData = async () => {
+  try {
+    console.log('Checking if test data needs to be initialized...');
+    const scoresRef = ref(database, 'scores');
+    const snapshot = await get(scoresRef);
+
+    if (!snapshot.exists() || snapshot.size === 0) {
+      console.log('No existing scores found, adding test data');
+
+      // Add some test scores
+      const testScores = [
+        {
+          walletAddress: 'test1',
+          displayName: 'TestPlayer1',
+          score: 10000,
+          level: 10,
+          lines: 50,
+          verified: true,
+          timestamp: Date.now() - 1000000
+        },
+        {
+          walletAddress: 'test2',
+          displayName: 'TestPlayer2',
+          score: 8500,
+          level: 8,
+          lines: 40,
+          verified: true,
+          timestamp: Date.now() - 900000
+        },
+        {
+          walletAddress: 'test3',
+          displayName: 'TestPlayer3',
+          score: 7200,
+          level: 7,
+          lines: 35,
+          verified: true,
+          timestamp: Date.now() - 800000
+        }
+      ];
+
+      for (const score of testScores) {
+        const newScoreRef = push(scoresRef);
+        await set(newScoreRef, score);
+      }
+
+      console.log('Test data added successfully');
+    } else {
+      console.log('Database already has scores, skipping test data');
+    }
+  } catch (error) {
+    console.error('Error initializing test data:', error);
+  }
+};
+
+// Initialize test data
+initializeTestData();
 
 /**
  * Saves a player's score to the Firebase leaderboard
@@ -13,6 +78,7 @@ const database = getDatabase(app);
  */
 export const saveScore = async (scoreData) => {
   try {
+    console.log('Saving score to Firebase:', scoreData);
     const { walletAddress, displayName, score, level, lines, gameTime, verificationData } = scoreData;
 
     // Create a unique key for this score
@@ -42,6 +108,7 @@ export const saveScore = async (scoreData) => {
 
     // Save to Firebase
     await set(newScoreRef, scoreToSave);
+    console.log('Score saved successfully with key:', newScoreRef.key);
 
     // Update or create player record
     const playerRef = ref(database, `players/${walletAddress}`);
@@ -58,6 +125,7 @@ export const saveScore = async (scoreData) => {
         highScore,
         lastActive: Date.now()
       });
+      console.log('Updated existing player record');
     } else {
       // Create new player
       await set(playerRef, {
@@ -66,6 +134,7 @@ export const saveScore = async (scoreData) => {
         created: Date.now(),
         lastActive: Date.now()
       });
+      console.log('Created new player record');
     }
 
     return { success: true, scoreId: newScoreRef.key };
@@ -82,6 +151,8 @@ export const saveScore = async (scoreData) => {
  */
 export const getTopScores = async (limit = 50) => {
   try {
+    console.log(`Getting top ${limit} scores from Firebase`);
+
     // Query scores, ordered by score (highest first), limited to 'limit'
     const scoresRef = ref(database, 'scores');
     const scoresQuery = query(
@@ -90,7 +161,9 @@ export const getTopScores = async (limit = 50) => {
       limitToLast(limit)      // Get only the highest 'limit' scores
     );
 
+    console.log('Executing Firebase query...');
     const snapshot = await get(scoresQuery);
+    console.log('Firebase query completed, data received:', snapshot.exists(), snapshot.size);
 
     // Convert Firebase snapshot to array
     const scores = [];
@@ -100,6 +173,8 @@ export const getTopScores = async (limit = 50) => {
         ...childSnapshot.val()
       });
     });
+
+    console.log(`Processed ${scores.length} scores from Firebase`);
 
     // Sort by score (highest first) since Firebase returns them in ascending order
     return scores.sort((a, b) => b.score - a.score);
@@ -117,6 +192,7 @@ export const getTopScores = async (limit = 50) => {
  */
 export const getPlayerScores = async (walletAddress, limit = 10) => {
   try {
+    console.log(`Getting scores for player ${walletAddress}`);
     // Get all scores first
     const scoresRef = ref(database, 'scores');
     const snapshot = await get(scoresRef);
@@ -132,6 +208,8 @@ export const getPlayerScores = async (walletAddress, limit = 10) => {
         });
       }
     });
+
+    console.log(`Found ${playerScores.length} scores for player ${walletAddress}`);
 
     // Sort by score (highest first) and limit
     return playerScores
@@ -150,6 +228,7 @@ export const getPlayerScores = async (walletAddress, limit = 10) => {
  */
 export const getPlayerRank = async (walletAddress) => {
   try {
+    console.log(`Getting rank for player ${walletAddress}`);
     // Get all scores
     const scores = await getTopScores(1000); // Get a large number to ensure we find the player
 
@@ -157,6 +236,7 @@ export const getPlayerRank = async (walletAddress) => {
     const playerScores = scores.filter(score => score.walletAddress === walletAddress);
 
     if (playerScores.length === 0) {
+      console.log(`No scores found for player ${walletAddress}`);
       return { rank: -1, score: 0 }; // Player not found
     }
 
@@ -170,6 +250,8 @@ export const getPlayerRank = async (walletAddress) => {
     const rank = scores.findIndex(score =>
       score.score === highestScore && score.walletAddress === walletAddress
     ) + 1; // +1 because arrays are 0-indexed
+
+    console.log(`Player ${walletAddress} rank: ${rank}, score: ${highestScore}`);
 
     return { rank, score: highestScore };
   } catch (error) {
@@ -186,10 +268,12 @@ export const getPlayerRank = async (walletAddress) => {
  */
 export const claimRewards = async (scoreId, rewardsAmount) => {
   try {
+    console.log(`Claiming ${rewardsAmount} rewards for score ${scoreId}`);
     const scoreRef = ref(database, `scores/${scoreId}`);
     const snapshot = await get(scoreRef);
 
     if (!snapshot.exists()) {
+      console.log(`Score ${scoreId} not found`);
       throw new Error('Score not found');
     }
 
@@ -201,6 +285,8 @@ export const claimRewards = async (scoreId, rewardsAmount) => {
       amount: rewardsAmount,
       claimedAt: Date.now()
     });
+
+    console.log(`Rewards claimed successfully for score ${scoreId}`);
 
     return { success: true };
   } catch (error) {

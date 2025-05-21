@@ -42,6 +42,15 @@ class LeaderboardApiClient {
     try {
       console.log('Getting top scores from Firebase');
       const scores = await firebaseLeaderboard.getTopScores(limit);
+      console.log('Received scores from Firebase:', scores);
+
+      // Make sure we're returning data in the expected format
+      if (!scores || !Array.isArray(scores)) {
+        console.error('Invalid scores data from firebaseLeaderboard', scores);
+        // Return empty array in the correct format
+        return { success: true, data: [] };
+      }
+
       return { success: true, data: scores };
     } catch (error) {
       console.error('Error getting top scores:', error);

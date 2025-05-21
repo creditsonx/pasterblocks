@@ -27,7 +27,7 @@ export const useLeaderboard = () => {
   const [processingPayout, setProcessingPayout] = useState(false);
   const [payoutResult, setPayoutResult] = useState<string | null>(null);
 
-  // Load leaderboard data
+  // Update fetchLeaderboard to include better error handling and logging
   const fetchLeaderboard = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
@@ -35,10 +35,45 @@ export const useLeaderboard = () => {
       // Try to fetch from Firebase
       try {
         console.log('Attempting to fetch from Firebase...');
+        const startTime = Date.now();
+
         const response = await leaderboardApi.getTopScores(50);
         console.log('Firebase response received:', response);
 
-        if (response && response.data) {
+        const endTime = Date.now();
+        console.log(`Firebase query took ${endTime - startTime}ms to complete`);
+
+        // Explicitly check the response format
+        if (response && Array.isArray(response.data) && response.data.length > 0) {
+          console.log(`Received ${response.data.length} scores from Firebase`);
+
+          // Add some sample data if the response is empty or missing
+          if (response.data.length === 0) {
+            console.log('Adding sample data since Firebase returned empty array');
+            response.data = [
+              {
+                id: 'sample1',
+                playerAddress: 'sample1',
+                displayName: 'SamplePlayer1',
+                score: 15000,
+                level: 15,
+                lines: 75,
+                verified: true,
+                timestamp: Date.now() - 3600000
+              },
+              {
+                id: 'sample2',
+                playerAddress: 'sample2',
+                displayName: 'SamplePlayer2',
+                score: 12000,
+                level: 12,
+                lines: 60,
+                verified: true,
+                timestamp: Date.now() - 7200000
+              }
+            ];
+          }
+
           setState({
             topPlayers: response.data,
             loading: false,
@@ -47,7 +82,14 @@ export const useLeaderboard = () => {
           });
           console.log('Successfully loaded online leaderboard data');
           return;
+        } else if (response && !response.data) {
+          console.error('Firebase response missing data property:', response);
+          throw new Error('Invalid response format: missing data property');
+        } else if (response && !Array.isArray(response.data)) {
+          console.error('Firebase response.data is not an array:', response.data);
+          throw new Error('Invalid response format: data is not an array');
         } else {
+          console.error('Unexpected Firebase response format:', response);
           throw new Error('Invalid response format from Firebase');
         }
       } catch (apiError) {
@@ -61,7 +103,10 @@ export const useLeaderboard = () => {
       }
 
       // Fallback to local storage if Firebase is not available
+      console.log('Loading scores from local storage');
       const topPlayers = getTopPlayers();
+      console.log(`Loaded ${topPlayers.length} scores from local storage`);
+
       setState({
         topPlayers,
         loading: false,
