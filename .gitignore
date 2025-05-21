@@ -1,0 +1,10 @@
+paster-blocks.zip
+output/output.zip
+*.zip
+dist/
+node_modules/
+.env
+.env.local
+.env.development
+.env.production
+.netlify
