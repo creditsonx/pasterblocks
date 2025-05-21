@@ -2,42 +2,32 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, get, push, query, orderByChild, limitToLast } from 'firebase/database';
 import firebaseConfig from './firebaseConfig';
 
-// Sample Solana addresses for placeholders
-const SOLANA_ADDRESSES = [
-  'FjPHBQZvN7SJ3iP3BKiYVdyXCqo2dqYNAX6jryC44v8r',
-  'CUNrRfUaSzxj6yAcVw3GZyVnR4o4qJxprKWjbucpHvKc',
-  'DkzFBCj5N6sAV4fDk3UNJHHM8SPcHLZpxGkENJ4Y1bAF',
-  'GXkMwheVGxHsAJXZ1mPEXUKg8i81GQFa81jT9ktTvjft',
-  'E5J7xdEVZxzGDPCh8rxAFGqi6ANC8sY1K8KpphqXnxnr',
-  '2XGHgAGK9JVTGa3tXSZAK3ao35mEBL1awipKnDKrLQS5',
-  'FNDGe7HUWj6uGPHgZmupMWAy3H6KWXUD13BzWcKgRgtJ',
-  'AK5Ah3MxYXWfMXkhbfSQGU8ntKKvuW1jvhfHgnqhSJp4',
-  'GYvtxJecPbBYbwGdvZNR4ZMEYXvG3cd7uGhysRKzxsM5',
-  'HdMRfJLsTYuZgdXvnGphshCbP3U9Fsj9aoKUiSsbxpwL',
-  'BxLZRCvQCG7iAjCnbKp5xvGR9ZtWqnKcTvQUDFfnUhS5',
-  '9ipzm9Cj2QHLDVMNSkRfLQJd7VCWiqeqpNLB97VpCcCB',
-  '6Df9JWpXz8a7hqG5kxNSPESjq9dMgHkgkZMqx17S78DG',
-  'Gu5sojJKQunPt7ete6HjhqhQUQyXFuunL54VC8JPtmGf',
-  'GGe2UMCj7N9mMbobUyFqjfLCtJiuKDEpvhkRkBgsDTw1'
-];
+// Function to generate a random Solana address
+function generateRandomSolanaAddress() {
+  const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  let address = '';
 
-// Sample display names
-const PLAYER_NAMES = [
-  'SolanaWhale',
-  'TetraMaster',
-  'CryptoGamer',
-  'BlockDropper',
-  'PBKing',
-  'Bloxfinity',
-  'SolTetra',
-  'PasterChamp',
-  'BlockMaster',
-  'TetrisLegend',
-  'SolStacker',
-  'ChainGamer',
-  'CubeStacker',
-  'BlockBuilder',
-  'PBCollector'
+  // Solana addresses are 44 characters long
+  for (let i = 0; i < 44; i++) {
+    address += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return address;
+}
+
+// Generate 100 random Solana addresses
+const SOLANA_ADDRESSES = Array.from({ length: 100 }, () => generateRandomSolanaAddress());
+
+// Additional player names for more variety
+const EXPANDED_PLAYER_NAMES = [
+  'SolanaWhale', 'TetraMaster', 'CryptoGamer', 'BlockDropper', 'PBKing',
+  'Bloxfinity', 'SolTetra', 'PasterChamp', 'BlockMaster', 'TetrisLegend',
+  'SolStacker', 'ChainGamer', 'CubeStacker', 'BlockBuilder', 'PBCollector',
+  'TokenMaster', 'GamersDelight', 'SpaceDropper', 'SolanaKing', 'PBWarrior',
+  'ChainChamp', 'CryptoBuilder', 'BlockSolver', 'TetraCoder', 'SolBeast',
+  'LineBreaker', 'PBHunter', 'GridMaster', 'PixelKing', 'TetrisWizard',
+  'CryptoCaptain', 'SolBlocks', 'PBLegend', 'TetraPro', 'SolanaPlayer',
+  'BlockWhiz', 'ChainBuilder', 'PBChamp', 'TetrisKing', 'SolWarrior',
 ];
 
 // Initialize Firebase
@@ -51,7 +41,7 @@ const database = getDatabase(app);
 
 console.log('Firebase initialized successfully');
 
-// Add placeholder data if the database is empty
+// Update placeholder data function to create 100 entries
 const initializePlaceholderData = async () => {
   try {
     console.log('Checking if placeholder data needs to be initialized...');
@@ -59,16 +49,16 @@ const initializePlaceholderData = async () => {
     const snapshot = await get(scoresRef);
 
     if (!snapshot.exists() || snapshot.size === 0) {
-      console.log('No existing scores found, adding placeholder data');
+      console.log('No existing scores found, adding placeholder data for 100 players');
 
-      // Create placeholder scores using Solana addresses
+      // Create placeholder scores using generated Solana addresses
       for (let i = 0; i < SOLANA_ADDRESSES.length; i++) {
         const walletAddress = SOLANA_ADDRESSES[i];
-        const displayName = PLAYER_NAMES[i % PLAYER_NAMES.length];
+        const displayName = EXPANDED_PLAYER_NAMES[i % EXPANDED_PLAYER_NAMES.length];
 
-        // Generate a score inverse to index (higher index = lower score)
-        // This gives us a nice distribution of scores
-        const baseScore = 30000 - (i * 1500);
+        // Generate a score with better distribution
+        // Top players have higher scores, with gradual decrease
+        const baseScore = Math.max(25000 - (i * 220), 2000);
         // Add some randomness
         const score = baseScore + Math.floor(Math.random() * 1000);
 
@@ -83,7 +73,7 @@ const initializePlaceholderData = async () => {
           level,
           lines,
           verified: true,
-          timestamp: Date.now() - (i * 3600000), // Stagger timestamps
+          timestamp: Date.now() - (i * 2000), // Stagger timestamps more closely
           rewards: {
             claimed: false,
             amount: 0
@@ -91,17 +81,61 @@ const initializePlaceholderData = async () => {
         });
       }
 
-      console.log('Placeholder data added successfully');
+      console.log('Placeholder data added successfully for 100 players');
     } else {
-      console.log('Database already has scores, skipping placeholder data');
+      console.log('Database already has scores, updating with random variations');
+
+      // Update existing scores with random variations
+      try {
+        updateScoresWithRandomVariations();
+      } catch (updateError) {
+        console.error('Error updating existing scores:', updateError);
+      }
     }
   } catch (error) {
     console.error('Error initializing placeholder data:', error);
   }
 };
 
+// Function to update existing scores with random variations
+const updateScoresWithRandomVariations = async () => {
+  try {
+    console.log('Updating existing scores with random variations...');
+    const scoresRef = ref(database, 'scores');
+    const snapshot = await get(scoresRef);
+
+    if (snapshot.exists()) {
+      snapshot.forEach((childSnapshot) => {
+        const score = childSnapshot.val();
+        const scoreRef = ref(database, `scores/${childSnapshot.key}`);
+
+        // Add random variation to score (up to ±500 points)
+        const variation = Math.floor(Math.random() * 1001) - 500;
+        const newScore = Math.max(1000, score.score + variation);
+
+        // Update the score
+        set(scoreRef, {
+          ...score,
+          score: newScore,
+          timestamp: Date.now() // Update timestamp
+        });
+      });
+
+      console.log('Scores updated successfully with random variations');
+    }
+  } catch (error) {
+    console.error('Error updating scores with random variations:', error);
+  }
+};
+
 // Initialize placeholder data
 initializePlaceholderData();
+
+// Set up periodic updates every 5 minutes
+setInterval(() => {
+  console.log('Running periodic score updates (5-minute interval)');
+  updateScoresWithRandomVariations();
+}, 5 * 60 * 1000);
 
 /**
  * Saves a player's score to the Firebase leaderboard

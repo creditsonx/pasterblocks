@@ -75,20 +75,20 @@ export const calculatePayout = (rank: number): number => {
 
 // Helper to get the reward tier for a given rank
 export const getRewardTier = (rank: number): { tier: number, color: string } => {
-  if (rank <= 5) {
-    return { tier: 1, color: 'from-sky-300 to-blue-300' };      // Diamond tier (Ranks 1-5) - light blue
+  if (rank <= 3) {
+    return { tier: 1, color: 'from-yellow-300 to-amber-500' };   // Gold tier (Ranks 1-3)
   }
-  if (rank <= 20) {
-    return { tier: 2, color: 'from-slate-400 to-zinc-300' };    // Platinum tier (Ranks 6-20) - silver
+  if (rank <= 7) {
+    return { tier: 2, color: 'from-slate-300 to-gray-400' };     // Silver tier (Ranks 4-7)
   }
-  if (rank <= 30) {
-    return { tier: 3, color: 'from-yellow-500 to-amber-400' };  // Gold tier (Ranks 21-30) - gold
+  if (rank <= 10) {
+    return { tier: 3, color: 'from-amber-700 to-orange-800' };   // Bronze tier (Ranks 8-10)
   }
-  if (rank <= 40) {
-    return { tier: 4, color: 'from-gray-400 to-slate-300' };    // Silver tier (Ranks 31-40) - silver
+  if (rank <= 15) {
+    return { tier: 4, color: 'from-violet-500 to-purple-700' };  // Purple tier (Ranks 11-15)
   }
 
-  return { tier: 5, color: 'from-amber-800 to-yellow-900' };    // Bronze tier (Ranks 41-50) - bronze
+  return { tier: 5, color: 'from-gray-600 to-gray-700' };        // Standard tier (Ranks 16+)
 };
 
 // Process payouts for top players

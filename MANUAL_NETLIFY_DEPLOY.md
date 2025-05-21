@@ -1,68 +1,89 @@
-# Manual Netlify Deployment Instructions
+# Manual Netlify Deployment Guide
 
-It appears that automatic deployment through Same isn't working correctly. Follow these steps to manually deploy to your Netlify account:
+If you're experiencing issues with automatic deployments from GitHub to Netlify, follow these steps to manually deploy the project:
 
-## 1. Download the dist folder
+## Option 1: Deploy from Local Build (Recommended)
 
-First, you need to download the built files from our current session:
+This option creates the build locally and then uploads just the production files to Netlify:
 
-1. In Same, click the folder icon on the left sidebar
-2. Navigate to the `dist` folder
-3. Right-click on the `dist` folder and select "Download"
-4. This will download a zip file containing the built site
-
-## 2. Deploy to Netlify manually
-
-1. Go to your Netlify dashboard: https://app.netlify.com/teams/creditsonx
-2. Click "Add new site" > "Deploy manually"
-3. Drag and drop the zip file you downloaded
-4. Wait for the upload and deployment to complete
-
-## 3. Configure site settings
-
-After deployment:
-
-1. Click on your new site
-2. Go to "Site settings" > "Build & deploy" > "Edit settings"
-3. Configure the following:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Click "Save"
-
-## 4. Set up environment variables
-
-1. Go to "Site settings" > "Environment variables"
-2. Add the following variables:
+1. **Build the project locally**:
+   ```bash
+   bun install
+   bun run build
    ```
-   FIREBASE_API_KEY=AIzaSyDfrXxYZ3DP14w9zx-lKBzKp8AQUgKBEoA
-   FIREBASE_PROJECT_ID=pasterblocks-leaderboard
+
+2. **Upload the `dist` folder to Netlify**:
+   - Go to [Netlify](https://app.netlify.com/)
+   - Navigate to your site
+   - Go to the "Deploys" tab
+   - Click "Deploy manually"
+   - Drag and drop the `dist` folder from your local project
+   - Wait for the upload to complete
+
+3. **Verify the deployment**:
+   - Once the upload is complete, Netlify will process the files
+   - Click the preview link to ensure your site is working correctly
+   - Check that the leaderboard is displaying properly
+
+## Option 2: Configure GitHub Deployment
+
+If you prefer automated deployments from GitHub:
+
+1. **Update `netlify.toml`**:
+   - The file should look like this:
+   ```toml
+   [build]
+     command = "npm install && npm run build"
+     publish = "dist"
+     environment = { NODE_VERSION = "20.18.0" }
+
+   [[redirects]]
+     from = "/*"
+     to = "/index.html"
+     status = 200
    ```
-3. Click "Save"
 
-## 5. Set up redirects
-
-1. Create a file named `_redirects` in your site's root directory with the following content:
+2. **Remove Bun references**:
+   - Edit `package.json` to use npm instead of bun:
+   ```json
+   "scripts": {
+     "dev": "vite --host 0.0.0.0",
+     "build": "tsc -b && vite build --outDir dist",
+     "preview": "vite preview"
+   }
    ```
-   /* /index.html 200
+
+3. **Push changes to GitHub**
+   ```bash
+   git add .
+   git commit -m "Configure for Netlify deployment"
+   git push
    ```
-2. Go to "Site settings" > "Functions" and make sure the Functions directory is set to `netlify/functions`
 
-## 6. Verify the deployment
+4. **Deploy on Netlify**:
+   - Go to [Netlify](https://app.netlify.com/)
+   - Navigate to your site
+   - Go to the "Deploys" tab
+   - Trigger a new deploy from GitHub
 
-1. Visit your site URL
-2. Test the leaderboard functionality
-3. Ensure it shows "Online Leaderboard" status in the top right of the leaderboard
+## Troubleshooting
 
-## If you need to update the site in the future
+If you encounter issues with the leaderboard:
 
-1. Download the updated dist folder
-2. Go to your site in Netlify
-3. Click "Deploys" > "Drag and drop" to upload your new files
+1. **Check browser console for errors**:
+   - Open browser DevTools (F12)
+   - Look for any errors related to Firebase or data loading
 
-## Current status
+2. **Verify placeholder data is configured**:
+   - The application is now using placeholder data instead of Firebase
+   - This ensures the leaderboard always displays data even without a backend
 
-The app is now using Firebase Realtime Database for the leaderboard, which means:
-- The leaderboard will be permanently online
-- All players globally will see the same leaderboard
-- No need for database initialization or server maintenance
-- Scores are stored securely and persist across sessions
+3. **Clear browser cache**:
+   - Sometimes old JavaScript files may be cached
+   - Try hard refreshing (Ctrl+F5) or clearing browser cache
+
+4. **Test offline functionality**:
+   - The app should work even without an internet connection
+   - All functionality is client-side only
+
+For additional assistance, please contact the development team.

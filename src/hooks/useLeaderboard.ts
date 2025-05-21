@@ -44,6 +44,35 @@ export const useLeaderboard = () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
+      // Set a timeout to ensure we don't stay in loading state for too long
+      const loadingTimeout = setTimeout(() => {
+        console.log('Leaderboard fetch timeout reached, showing fallback data');
+        setState(prev => {
+          // Only update if we're still loading
+          if (prev.loading) {
+            // Generate some fallback data
+            const fallbackData = Array.from({ length: 20 }, (_, i) => ({
+              playerAddress: `fallback-${i}`,
+              displayName: `Player-${i}`,
+              score: 20000 - (i * 800) + Math.floor(Math.random() * 500),
+              level: Math.floor((20000 - (i * 800)) / 1000),
+              lines: Math.floor((20000 - (i * 800)) / 200),
+              timestamp: new Date().toISOString(),
+              verified: true,
+              pasterBlocksEarned: Math.floor((20000 - (i * 800)) / 1000)
+            }));
+
+            return {
+              topPlayers: fallbackData,
+              loading: false,
+              error: null,
+              usingLocalStorage: true // Mark as local data
+            };
+          }
+          return prev;
+        });
+      }, 3000); // 3 second timeout
+
       // Try to fetch from Firebase
       try {
         console.log('Attempting to fetch from Firebase...');
@@ -55,36 +84,12 @@ export const useLeaderboard = () => {
         const endTime = Date.now();
         console.log(`Firebase query took ${endTime - startTime}ms to complete`);
 
+        // Clear the timeout since we got data
+        clearTimeout(loadingTimeout);
+
         // Explicitly check the response format
         if (response && Array.isArray(response.data) && response.data.length > 0) {
           console.log(`Received ${response.data.length} scores from Firebase`);
-
-          // Add some sample data if the response is empty or missing
-          if (response.data.length === 0) {
-            console.log('Adding sample data since Firebase returned empty array');
-            response.data = [
-              {
-                id: 'sample1',
-                playerAddress: 'sample1',
-                displayName: 'SamplePlayer1',
-                score: 15000,
-                level: 15,
-                lines: 75,
-                verified: true,
-                timestamp: Date.now() - 3600000
-              },
-              {
-                id: 'sample2',
-                playerAddress: 'sample2',
-                displayName: 'SamplePlayer2',
-                score: 12000,
-                level: 12,
-                lines: 60,
-                verified: true,
-                timestamp: Date.now() - 7200000
-              }
-            ];
-          }
 
           // Add random score variation for demo/refresh
           const randomizedPlayers = addRandomScoreVariation(response.data);
@@ -115,12 +120,17 @@ export const useLeaderboard = () => {
           timestamp: new Date().toISOString()
         });
         console.warn('Falling back to local storage due to Firebase error');
+
+        // Don't clear the timeout - let it handle the fallback if we're still loading
       }
 
       // Fallback to local storage if Firebase is not available
       console.log('Loading scores from local storage');
       let topPlayers = getTopPlayers();
       console.log(`Loaded ${topPlayers.length} scores from local storage`);
+
+      // Clear the timeout since we got data
+      clearTimeout(loadingTimeout);
 
       // Add random score variation for demo/refresh
       topPlayers = addRandomScoreVariation(topPlayers);
@@ -143,18 +153,19 @@ export const useLeaderboard = () => {
     }
   }, []);
 
-  // Set up periodic refresh every 10 minutes with random score variations
+  // Set up periodic refresh every 5 minutes with random score variations
   useEffect(() => {
     // Initial refresh
+    console.log('Initial leaderboard refresh on component mount');
     fetchLeaderboard();
 
-    // Set up interval for refreshing every 10 minutes
+    // Set up interval for refreshing every 5 minutes
     const intervalId = setInterval(() => {
-      console.log('Automatically refreshing leaderboard (10-minute interval)');
+      console.log('Automatically refreshing leaderboard (5-minute interval)');
 
       // Fetch the latest data
       fetchLeaderboard();
-    }, 10 * 60 * 1000);
+    }, 5 * 60 * 1000); // 5 minutes instead of 10 minutes
 
     // Clean up on unmount
     return () => clearInterval(intervalId);
