@@ -4,6 +4,28 @@ import useLeaderboard from '../../hooks/useLeaderboard';
 import { calculatePayout, getRewardTier } from '../../utils/leaderboardUtils';
 import Button from '../ui/Button';
 import type { PlayerScore } from '../../types/leaderboard';
+import leaderboardApi from '../../utils/leaderboardApiClient';
+
+// Utility functions for test panel
+const generateRandomScore = () => {
+  return Math.floor(Math.random() * 15000) + 5000;
+};
+
+const generateRandomLevel = () => {
+  return Math.floor(Math.random() * 20) + 1;
+};
+
+const generateRandomLines = (level: number) => {
+  return level * (Math.floor(Math.random() * 5) + 5);
+};
+
+const generateRandomName = () => {
+  const prefixes = ['Cool', 'Super', 'Mega', 'Ultra', 'Epic', 'Pro', 'Master', 'Ninja', 'Crypto', 'Block'];
+  const suffixes = ['Player', 'Gamer', 'Tetris', 'Winner', 'Champion', 'Legend', 'Hero', 'Warrior', 'Dropper', 'Builder'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+  return `${prefix}${suffix}${Math.floor(Math.random() * 100)}`;
+};
 
 const Leaderboard = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,7 +39,8 @@ const Leaderboard = () => {
     usingLocalStorage,
     processingPayout,
     payoutResult,
-    processPayout
+    processPayout,
+    refreshLeaderboard,
   } = useLeaderboard();
 
   // Number of players per page
@@ -238,6 +261,145 @@ const Leaderboard = () => {
           </div>
         </div>
       )}
+
+      {/* Test Panel - For development/admin use */}
+      <div className="mt-6 pt-4 border-t border-gray-700">
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-sm text-gray-400">Test Panel</div>
+          <Button
+            onClick={async () => {
+              // Generate a random score
+              const score = generateRandomScore();
+              const level = generateRandomLevel();
+              const lines = generateRandomLines(level);
+              const displayName = generateRandomName();
+              const walletAddress = `test${Date.now().toString().slice(-6)}`;
+
+              try {
+                // Submit to Firebase
+                await leaderboardApi.submitScore({
+                  walletAddress,
+                  displayName,
+                  score,
+                  level,
+                  lines,
+                  gameTime: Math.floor(Math.random() * 300) + 60, // Random game time between 1-6 minutes
+                  pasterBlocksEarned: Math.floor(score / 100)
+                });
+
+                // Refresh leaderboard
+                refreshLeaderboard();
+
+                console.log(`Test score submitted: ${score} by ${displayName}`);
+              } catch (error) {
+                console.error('Error submitting test score:', error);
+              }
+            }}
+            className="text-xs py-1 px-3"
+            variant="secondary"
+          >
+            Add Random Score
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mt-2">
+          <Button
+            onClick={async () => {
+              // Add 5 random scores at once
+              for (let i = 0; i < 5; i++) {
+                const score = generateRandomScore();
+                const level = generateRandomLevel();
+                const lines = generateRandomLines(level);
+                const displayName = generateRandomName();
+                const walletAddress = `test${Date.now().toString().slice(-6)}${i}`;
+
+                try {
+                  // Submit to Firebase with slight delay to avoid conflicts
+                  await new Promise(resolve => setTimeout(resolve, i * 100));
+
+                  await leaderboardApi.submitScore({
+                    walletAddress,
+                    displayName,
+                    score,
+                    level,
+                    lines,
+                    gameTime: Math.floor(Math.random() * 300) + 60,
+                    pasterBlocksEarned: Math.floor(score / 100)
+                  });
+
+                  console.log(`Test score ${i+1}/5 submitted: ${score} by ${displayName}`);
+                } catch (error) {
+                  console.error(`Error submitting test score ${i+1}/5:`, error);
+                }
+              }
+
+              // Refresh leaderboard after all scores submitted
+              setTimeout(() => {
+                refreshLeaderboard();
+                console.log('Leaderboard refreshed after adding 5 scores');
+              }, 1000);
+            }}
+            className="text-xs py-1"
+            variant="secondary"
+          >
+            Add 5 Scores
+          </Button>
+
+          <Button
+            onClick={async () => {
+              // Add 10 high scores (top tier)
+              for (let i = 0; i < 10; i++) {
+                // Generate high score (15k-30k)
+                const score = Math.floor(Math.random() * 15000) + 15000;
+                const level = Math.floor(Math.random() * 10) + 15; // High level 15-25
+                const lines = level * (Math.floor(Math.random() * 5) + 10);
+                const displayName = `TopPlayer${Math.floor(Math.random() * 100)}`;
+                const walletAddress = `highscore${Date.now().toString().slice(-6)}${i}`;
+
+                try {
+                  // Submit to Firebase with slight delay to avoid conflicts
+                  await new Promise(resolve => setTimeout(resolve, i * 100));
+
+                  await leaderboardApi.submitScore({
+                    walletAddress,
+                    displayName,
+                    score,
+                    level,
+                    lines,
+                    gameTime: Math.floor(Math.random() * 300) + 300, // Longer game time for high scores
+                    pasterBlocksEarned: Math.floor(score / 50) // More rewards for high scores
+                  });
+
+                  console.log(`High score ${i+1}/10 submitted: ${score} by ${displayName}`);
+                } catch (error) {
+                  console.error(`Error submitting high score ${i+1}/10:`, error);
+                }
+              }
+
+              // Refresh leaderboard after all scores submitted
+              setTimeout(() => {
+                refreshLeaderboard();
+                console.log('Leaderboard refreshed after adding 10 high scores');
+              }, 1500);
+            }}
+            className="text-xs py-1"
+            variant="secondary"
+          >
+            Add High Scores
+          </Button>
+
+          <Button
+            onClick={() => {
+              refreshLeaderboard();
+              console.log('Manually refreshed leaderboard');
+            }}
+            className="text-xs py-1"
+            variant="primary"
+          >
+            Refresh Leaderboard
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
