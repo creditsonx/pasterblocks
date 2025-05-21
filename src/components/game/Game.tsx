@@ -451,7 +451,7 @@ export const Game: FC = () => {
                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
-                Top 50
+                Top 15
               </button>
             </div>
 

@@ -208,15 +208,15 @@ const Leaderboard = () => {
           </div>
 
           {/* Header row */}
-          <div className="grid grid-cols-12 text-xs font-semibold text-gray-400 py-2 border-b border-gray-800">
+          <div className="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-400 py-2 border-b border-gray-800">
             <div className="col-span-1 pl-2">#</div>
-            <div className="col-span-6">Wallet</div>
-            <div className="col-span-2 text-right">Score</div>
+            <div className="col-span-5">Wallet</div>
+            <div className="col-span-3 text-right pr-2">Score</div>
             <div className="col-span-3 text-right pr-2">$PB Reward</div>
           </div>
 
           {/* Player rows */}
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {visiblePlayers.map((player: PlayerScore, index: number) => {
               const rank = currentPage * pageSize + index + 1;
 
@@ -226,7 +226,7 @@ const Leaderboard = () => {
               return (
                 <div
                   key={`${player.playerAddress || player.walletAddress}-${rank}`}
-                  className={`grid grid-cols-12 items-center text-sm px-2 py-3 rounded-md ${
+                  className={`grid grid-cols-12 gap-2 items-center text-sm px-3 py-3.5 rounded-md ${
                     publicKey && (player.playerAddress === publicKey.toString() || player.walletAddress === publicKey.toString())
                       ? 'bg-violet-900/30 border border-violet-500/50'
                       : rank % 2 === 0
@@ -234,22 +234,22 @@ const Leaderboard = () => {
                       : ''
                   }`}
                 >
-                  <div className="col-span-1 flex items-center">
+                  <div className="col-span-1">
                     {rank <= 15 && (
-                    <span className={`w-6 h-6 flex items-center justify-center rounded-full text-xs bg-gradient-to-r ${getRewardTier(rank).color} text-white font-bold`}>
+                    <span className={`w-7 h-7 flex items-center justify-center rounded-full text-xs bg-gradient-to-r ${getRewardTier(rank).color} text-white font-bold`}>
                       {rank}
                     </span>
                     )}
                     {rank > 15 && (
-                      <span className="w-6 h-6 flex items-center justify-center rounded-md text-xs bg-gray-700 text-gray-300">
+                      <span className="w-7 h-7 flex items-center justify-center rounded-md text-xs bg-gray-700 text-gray-300">
                         {rank}
                       </span>
                     )}
                   </div>
-                  <div className="col-span-6 truncate font-mono text-gray-300">
+                  <div className="col-span-5 truncate font-mono text-gray-300 pl-1">
                     {displayText}
                   </div>
-                  <div className="col-span-2 text-right font-mono">
+                  <div className="col-span-3 text-right font-mono pr-1">
                     {player.score >= 10000 ? (
                       <span className={`bg-clip-text text-transparent bg-gradient-to-r ${getRewardTier(rank).color}`}>
                         {player.score.toLocaleString()}
@@ -258,9 +258,9 @@ const Leaderboard = () => {
                       player.score.toLocaleString()
                     )}
                   </div>
-                  <div className="col-span-3 text-right text-xs">
+                  <div className="col-span-3 text-right text-xs pr-2">
                     {rank <= 15 ? (
-                      <span className="text-yellow-400 font-semibold">
+                      <span className="text-yellow-400 font-semibold whitespace-nowrap">
                         {calculatePayout(rank).toLocaleString()} $PB
                       </span>
                     ) : (
@@ -273,11 +273,11 @@ const Leaderboard = () => {
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-5 grid grid-cols-2 gap-2">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               <Button
                 onClick={goToPreviousPage}
                 disabled={currentPage === 0}
-                className="text-xs py-1.5"
+                className="text-xs py-2"
                 variant="secondary"
               >
                 Previous
@@ -285,7 +285,7 @@ const Leaderboard = () => {
               <Button
                 onClick={goToNextPage}
                 disabled={currentPage >= totalPages - 1}
-                className="text-xs py-1.5"
+                className="text-xs py-2"
                 variant="secondary"
               >
                 Next

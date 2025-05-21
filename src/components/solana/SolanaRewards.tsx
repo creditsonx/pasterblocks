@@ -32,12 +32,12 @@ export const SolanaRewards = () => {
   }, [publicKey, topPlayers]);
 
   // Get player's reward tier if ranked
-  const rewardTier = playerRank > 0 && playerRank <= 50
+  const rewardTier = playerRank > 0 && playerRank <= 15
     ? getRewardTier(playerRank)
     : null;
 
   // Calculate reward amount
-  const rewardAmount = playerRank > 0 && playerRank <= 50
+  const rewardAmount = playerRank > 0 && playerRank <= 15
     ? calculatePayout(playerRank)
     : 0;
 
@@ -91,17 +91,17 @@ export const SolanaRewards = () => {
             <div className="mt-3 flex justify-between items-center">
               <div className="text-sm text-gray-300">Status:</div>
               <div className="text-sm">
-                {playerRank > 0 && playerRank <= 50 ? (
+                {playerRank > 0 && playerRank <= 15 ? (
                   <span className={`px-1.5 py-0.5 text-xs rounded-full bg-gradient-to-r ${rewardTier?.color} text-white`}>
-                    {playerRank <= 5
-                      ? 'Diamond'
-                      : playerRank <= 20
-                      ? 'Platinum'
-                      : playerRank <= 30
+                    {playerRank <= 3
                       ? 'Gold'
-                      : playerRank <= 40
+                      : playerRank <= 7
                       ? 'Silver'
-                      : 'Bronze'}
+                      : playerRank <= 10
+                      ? 'Bronze'
+                      : playerRank <= 15
+                      ? 'Violet'
+                      : 'Standard'}
                   </span>
                 ) : (
                   <span className="px-1.5 py-0.5 text-xs bg-gray-700 text-gray-400 rounded-full">
@@ -133,13 +133,13 @@ export const SolanaRewards = () => {
             </div>
           )}
 
-          {playerRank > 50 && (
+          {playerRank > 15 && (
             <div className="mt-2 text-center text-sm text-amber-400">
-              Reach top 50 to earn $PASTERBLOCKS rewards!
+              Reach top 15 to earn $PASTERBLOCKS rewards!
             </div>
           )}
 
-          {playerRank > 0 && playerRank <= 50 && (
+          {playerRank > 0 && playerRank <= 15 && (
             <div className="mt-2 text-center text-sm text-green-400">
               Rewards are distributed every 24 hours!
             </div>
