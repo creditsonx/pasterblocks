@@ -14,7 +14,7 @@ function App() {
             <div className="flex items-center">
               <div className="mr-3">
                 <img
-                  src="/assets/images/pasternak.png"
+                  src="/assets/images/pblocks.png"
                   alt="@pasterblocks"
                   className="w-10 h-10 rounded-full border-2 border-violet-500"
                 />

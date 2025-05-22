@@ -54,7 +54,7 @@ export const Game: FC = () => {
   useEffect(() => {
     // Preload the image
     const img = new Image();
-    img.src = "/assets/images/pasternak.png";
+    img.src = "/assets/images/pblocks.png";
     img.onload = () => setImageLoaded(true);
   }, []);
 
