@@ -12,7 +12,13 @@ function App() {
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white">
         <div className="container mx-auto py-8 px-4">
           <div className="flex flex-col md:flex-row items-center justify-between mb-8">
-            <div className="flex items-center">
+            {/* Clickable logo section */}
+            <a
+              href="https://x.com/pasterblocks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center hover:opacity-90 transition"
+            >
               <div className="mr-3">
                 <img
                   src={UPDATED_PROFILE_IMAGE_PATH}
@@ -23,7 +29,7 @@ function App() {
               <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
                 $PASTERBLOCKS
               </h2>
-            </div>
+            </a>
 
             <div className="flex items-center gap-4 mt-4 md:mt-0">
               <button
