@@ -9,7 +9,7 @@ export interface PlayerScore {
   lines: number;
   timestamp?: string;
   verified?: boolean;
-  pasterBlocksEarned: number;
+  pBlocksEarned: number;
   gameTime?: number;
   date?: number;
   paid?: boolean;

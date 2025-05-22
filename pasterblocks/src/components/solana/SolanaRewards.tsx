@@ -129,13 +129,13 @@ export const SolanaRewards = () => {
 
           {playerRank <= 0 && (
             <div className="mt-2 text-center text-sm text-gray-400">
-              Play the game to earn $PASTERBLOCKS rewards!
+              Play the game to earn $PBLOCKS rewards!
             </div>
           )}
 
           {playerRank > 15 && (
             <div className="mt-2 text-center text-sm text-amber-400">
-              Reach top 15 to earn $PASTERBLOCKS rewards!
+              Reach top 15 to earn $PBLOCKS rewards!
             </div>
           )}
 

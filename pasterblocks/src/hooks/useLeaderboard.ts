@@ -59,7 +59,7 @@ export const useLeaderboard = () => {
               lines: Math.floor((20000 - (i * 800)) / 200),
               timestamp: new Date().toISOString(),
               verified: true,
-              pasterBlocksEarned: Math.floor((20000 - (i * 800)) / 1000)
+              pBlocksEarned: Math.floor((20000 - (i * 800)) / 1000)
             }));
 
             return {
@@ -172,7 +172,7 @@ export const useLeaderboard = () => {
   }, [fetchLeaderboard]);
 
   // Add a score to the leaderboard
-  const addScore = useCallback(async (score: number, level: number, lines: number, pasterBlocksEarned: number) => {
+  const addScore = useCallback(async (score: number, level: number, lines: number, pBlocksEarned: number) => {
     if (!publicKey) return;
 
     const playerAddress = publicKey.toString();
@@ -193,7 +193,7 @@ export const useLeaderboard = () => {
           level,
           lines,
           gameTime: 0, // We're not tracking this currently
-          pasterBlocksEarned
+          pBlocksEarned
         });
 
         console.log('Score submitted successfully to Firebase:', result);
@@ -215,7 +215,7 @@ export const useLeaderboard = () => {
         lines,
         timestamp: new Date().toISOString(),
         verified: false,
-        pasterBlocksEarned
+        pBlocksEarned
       });
 
       // Refresh the leaderboard if we're using local storage

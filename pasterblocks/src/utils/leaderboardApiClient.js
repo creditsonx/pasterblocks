@@ -46,7 +46,7 @@ function generatePlaceholderData(count = 50) {
       lines: Math.floor(score / 200),
       timestamp: Date.now() - (i * 3600000), // Staggered timestamps
       verified: true,
-      pasterBlocksEarned: Math.floor(score / 3000) // Scale reward points
+      pBlocksEarned: Math.floor(score / 3000) // Scale reward points
     });
   }
 

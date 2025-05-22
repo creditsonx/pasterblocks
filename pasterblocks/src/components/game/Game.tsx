@@ -183,7 +183,7 @@ export const Game: FC = () => {
       </h1>
 
       <div className="text-center text-sm text-purple-300 mt-1 bg-gradient-to-r from-purple-800/30 via-blue-800/30 to-purple-800/30 p-2 rounded-xl">
-        Play to earn $PASTERBLOCKS - Rewards Distributed Every 24 hours
+        Play to earn $PBLOCKS - Rewards Distributed Every 24 hours
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
@@ -276,7 +276,7 @@ export const Game: FC = () => {
 
                   <p className="text-white mb-4">SOL Earned: {solanaRewards.toFixed(4)}</p>
                   <p className="text-white mb-6">
-                    $PASTERBLOCKS: <span className="font-bold text-yellow-400">{Math.floor(solanaRewards * 100000)}</span>
+                    $PBLOCKS: <span className="font-bold text-yellow-400">{Math.floor(solanaRewards * 100000)}</span>
                   </p>
                   <div className="flex gap-2 justify-center">
                     <button

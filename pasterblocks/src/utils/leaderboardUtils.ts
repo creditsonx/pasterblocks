@@ -2,7 +2,7 @@ import { type PlayerScore, PAYOUT_SCHEDULE } from '../types/leaderboard';
 
 // In a real application, this would interact with a database or blockchain
 // For now, we'll use localStorage as a demo
-const LEADERBOARD_STORAGE_KEY = 'pasterblocks_leaderboard';
+const LEADERBOARD_STORAGE_KEY = 'pblocks_leaderboard';
 
 // Load leaderboard data from localStorage
 export const loadLeaderboard = (): PlayerScore[] => {
@@ -108,7 +108,7 @@ export const processPayouts = async (): Promise<{ success: boolean, message: str
       return {
         ...player,
         paid: true,
-        pasterBlocksEarned: player.pasterBlocksEarned + payoutAmount
+        pBlocksEarned: player.pBlocksEarned + payoutAmount
       };
     });
 
