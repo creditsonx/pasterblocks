@@ -193,7 +193,7 @@ export const Game: FC = () => {
           <div className={`relative w-32 h-32 md:w-48 md:h-48 overflow-hidden border-4 border-violet-500 rounded-2xl transform -rotate-6 shadow-[0_0_20px_rgba(124,58,237,0.7)] transition-all duration-300 hover:rotate-0 ${gameStarted ? 'scale-100' : 'scale-90'} ${gameStarted ? 'hidden md:block' : 'mx-auto'}`}>
             {imageLoaded && (
               <img
-                src="/assets/images/pasterblocks.svg"
+                src="/assets/images/pblocks.png"
                 alt="@pasterblocks"
                 className="w-full h-full object-contain bg-[#f5f3e8]"
               />
