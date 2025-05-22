@@ -1,0 +1,13 @@
+{
+  "name": "pasterblocks-functions",
+  "version": "1.0.0",
+  "description": "Serverless functions for PasterBlocks Tetris leaderboard",
+  "type": "module",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.2",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.5.0",
+    "pg": "^8.16.0",
+    "tweetnacl": "^1.0.3"
+  }
+}

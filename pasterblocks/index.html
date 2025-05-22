@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PasterBlocks: Believe in Tetris</title>
+  <meta name="description" content="Play Tetris to earn $PASTERBLOCKS tokens! Connect your Solana wallet and compete on the leaderboard." />
+  <meta name="theme-color" content="#8b5cf6" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDfrXxYZ3DP14w9zx-lKBzKp8AQUgKBEoA",
+      authDomain: "pasterblocks-leaderboard.firebaseapp.com",
+      databaseURL: "https://pasterblocks-leaderboard-default-rtdb.firebaseio.com",
+      projectId: "pasterblocks-leaderboard",
+      storageBucket: "pasterblocks-leaderboard.appspot.com",
+      messagingSenderId: "857653318641",
+      appId: "1:857653318641:web:d3f8e5f6c88f8ee0b7a7e8"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Make Firebase available globally
+    window.firebaseApp = app;
+    window.firebaseDb = database;
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
