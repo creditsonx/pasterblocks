@@ -324,7 +324,7 @@ export const Game: FC = () => {
                     PBlocks: Believe in Tetris
                   </h2>
                   <p className="text-white mb-4">
-                    The neon-block dropping game with $PASTERBLOCKS rewards!
+                    The neon-block dropping game with $PBLOCKS rewards!
                   </p>
                   <div className="text-white mb-6 text-left">
                     <p className="font-bold">Controls:</p>
