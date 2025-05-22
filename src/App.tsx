@@ -27,7 +27,7 @@ function App() {
                 />
               </div>
               <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                $PASTERBLOCKS
+                $PBLOCKS
               </h2>
             </a>
 
