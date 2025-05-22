@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pasternak Image</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #111827;
+    }
+    .image-container {
+      width: 400px;
+      height: 400px;
+      overflow: hidden;
+    }
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="image-container">
+    <img id="pasternak-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" alt="@pasterblocks">
+  </div>
+
+  <script>
+    // For now using a placeholder. In a real scenario, we'd have the actual base64 data.
+    // The user will need to replace this image or upload the actual pasternak image.
+  </script>
+</body>
+</html>

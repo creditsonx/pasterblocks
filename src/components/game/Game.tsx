@@ -11,6 +11,7 @@ import { LinesClearEffect } from './LinesClearEffect';
 import { useWallet } from '@solana/wallet-adapter-react';
 import useLeaderboard from '../../hooks/useLeaderboard';
 import { useSounds, SoundEffect } from '../../hooks/useSounds';
+import UPDATED_PROFILE_IMAGE_PATH from '../../utils/profileImagePath';
 
 export const Game: FC = () => {
   const {
@@ -54,7 +55,7 @@ export const Game: FC = () => {
   useEffect(() => {
     // Preload the image
     const img = new Image();
-    img.src = "/assets/images/pblocks.png";
+    img.src = UPDATED_PROFILE_IMAGE_PATH;
     img.onload = () => setImageLoaded(true);
   }, []);
 
@@ -179,11 +180,11 @@ export const Game: FC = () => {
   return (
     <div className="flex flex-col items-center gap-6">
       <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent drop-shadow-md">
-        PasterBlocks: Believe in Tetris
+        PBlocks: Believe in Tetris
       </h1>
 
       <div className="text-center text-sm text-purple-300 mt-1 bg-gradient-to-r from-purple-800/30 via-blue-800/30 to-purple-800/30 p-2 rounded-xl">
-        Play to earn $PASTERBLOCKS - Rewards Distributed Every 24 hours
+        Play to earn $PBLOCKS - Rewards Distributed Every 24 hours
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
@@ -193,7 +194,7 @@ export const Game: FC = () => {
           <div className={`relative w-32 h-32 md:w-48 md:h-48 overflow-hidden border-4 border-violet-500 rounded-2xl transform -rotate-6 shadow-[0_0_20px_rgba(124,58,237,0.7)] transition-all duration-300 hover:rotate-0 ${gameStarted ? 'scale-100' : 'scale-90'} ${gameStarted ? 'hidden md:block' : 'mx-auto'}`}>
             {imageLoaded && (
               <img
-                src="/assets/images/pasterblocks.svg"
+                src={UPDATED_PROFILE_IMAGE_PATH}
                 alt="@pasterblocks"
                 className="w-full h-full object-contain bg-[#f5f3e8]"
               />
@@ -276,7 +277,7 @@ export const Game: FC = () => {
 
                   <p className="text-white mb-4">SOL Earned: {solanaRewards.toFixed(4)}</p>
                   <p className="text-white mb-6">
-                    $PASTERBLOCKS: <span className="font-bold text-yellow-400">{Math.floor(solanaRewards * 100000)}</span>
+                    $PBLOCKS: <span className="font-bold text-yellow-400">{Math.floor(solanaRewards * 100000)}</span>
                   </p>
                   <div className="flex gap-2 justify-center">
                     <button
@@ -312,7 +313,7 @@ export const Game: FC = () => {
                   <div className="md:hidden w-20 h-20 mx-auto mb-4 relative overflow-hidden rounded-xl border-2 border-violet-500">
                     {imageLoaded && (
                       <img
-                        src="/assets/images/pasterblocks.svg"
+                        src={UPDATED_PROFILE_IMAGE_PATH}
                         alt="@pasterblocks"
                         className="w-full h-full object-contain bg-[#f5f3e8]"
                       />
@@ -320,7 +321,7 @@ export const Game: FC = () => {
                   </div>
 
                   <h2 className="text-2xl font-bold text-purple-400 mb-4">
-                    PasterBlocks: Believe in Tetris
+                    PBlocks: Believe in Tetris
                   </h2>
                   <p className="text-white mb-4">
                     The neon-block dropping game with $PASTERBLOCKS rewards!
@@ -513,7 +514,7 @@ export const Game: FC = () => {
             </div>
             <div className="flex items-center justify-center mt-1">
               <a
-                href="https://www.x.com/pasterblocks"
+                href="https://x.com/pasterblocks"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white font-bold hover:text-blue-300 transition-colors"

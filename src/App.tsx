@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Game } from './components/game/Game';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { WalletConnectionProvider, WalletConnectButton } from './components/solana/WalletConnect';
+import UPDATED_PROFILE_IMAGE_PATH from './utils/profileImagePath';
 
 function App() {
   const [showAdmin, setShowAdmin] = useState(false);
@@ -14,13 +15,13 @@ function App() {
             <div className="flex items-center">
               <div className="mr-3">
                 <img
-                  src="/assets/images/pblocks.png"
+                  src={UPDATED_PROFILE_IMAGE_PATH}
                   alt="@pasterblocks"
                   className="w-10 h-10 rounded-full border-2 border-violet-500"
                 />
               </div>
               <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                $PBLOCKS
+                $PASTERBLOCKS
               </h2>
             </div>
 
@@ -44,7 +45,7 @@ function App() {
           <div className="text-sm text-gray-400">
             Powered by
             <a
-              href="https://www.x.com/pasterblocks"
+              href="https://x.com/pasterblocks"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 font-medium hover:text-blue-300 transition-colors ml-1"

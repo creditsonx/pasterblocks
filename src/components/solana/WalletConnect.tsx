@@ -1,4 +1,4 @@
-import { type FC, useMemo, useEffect } from 'react';
+import { type FC, useMemo } from 'react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
@@ -11,15 +11,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 // Import the wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-// Override mobile detection
-if (typeof window !== 'undefined') {
-  // Force userAgent to appear as desktop to prevent mobile wallet detection
-  const originalUserAgent = window.navigator.userAgent;
-  Object.defineProperty(window.navigator, 'userAgent', {
-    get: () => originalUserAgent.replace(/android|iphone|ipad|mobile/i, 'desktop'),
-    configurable: true
-  });
-}
+// Removed mobile detection override that modifies userAgent to prevent issues with missing @solana-mobile package
 
 export const WalletConnectButton: FC = () => {
   const { publicKey } = useWallet();

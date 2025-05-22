@@ -57,3 +57,11 @@ See [DEPLOY.md](DEPLOY.md) for detailed deployment instructions.
 ## License
 
 Copyright (c) @pasterblocks & @BelieveApp. All rights reserved.
+
+## Deployment Info
+
+Last deployed: May 21, 2025
+
+## Deployment Info
+
+Last deployed: May 21, 2025

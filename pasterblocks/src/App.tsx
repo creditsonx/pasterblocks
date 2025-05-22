@@ -14,13 +14,13 @@ function App() {
             <div className="flex items-center">
               <div className="mr-3">
                 <img
-                  src="/assets/images/pasternak.png"
+                  src="/assets/images/pblocks.png"
                   alt="@pasterblocks"
                   className="w-10 h-10 rounded-full border-2 border-violet-500"
                 />
               </div>
               <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                $PASTERBLOCKS
+                $PBLOCKS
               </h2>
             </div>
 

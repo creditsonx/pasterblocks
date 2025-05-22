@@ -46,7 +46,7 @@ function generatePlaceholderData(count = 50) {
       lines: Math.floor(score / 200),
       timestamp: Date.now() - (i * 3600000), // Staggered timestamps
       verified: true,
-      pasterBlocksEarned: Math.floor(score / 3000) // Scale reward points
+      pBlocksEarned: Math.floor(score / 3000) // Scale reward points
     });
   }
 
@@ -73,10 +73,10 @@ setInterval(() => {
     // Update the score
     score.score = Math.max(1000, score.score + variation);
 
-    // Update level, lines and pasterBlocksEarned based on new score
+    // Update level, lines and pBlocksEarned based on new score
     score.level = Math.floor(score.score / 1000);
     score.lines = Math.floor(score.score / 200);
-    score.pasterBlocksEarned = Math.floor(score.score / 3000);
+    score.pBlocksEarned = Math.floor(score.score / 3000);
 
     // Update timestamp
     score.timestamp = Date.now() - Math.floor(Math.random() * 86400000); // Random time in last 24h
@@ -155,7 +155,7 @@ const leaderboardApiClient = {
       lines: Math.floor((15000 - (i * 1000)) / 200),
       timestamp: Date.now() - (i * 3600000),
       verified: true,
-      pasterBlocksEarned: Math.floor((15000 - (i * 1000)) / 3000)
+      pBlocksEarned: Math.floor((15000 - (i * 1000)) / 3000)
     }));
 
     return {
