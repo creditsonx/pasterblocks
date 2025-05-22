@@ -155,7 +155,7 @@ const Leaderboard = () => {
         lines: Math.floor(score / 200),
         timestamp: new Date().toISOString(),
         verified: true,
-        pasterBlocksEarned: Math.floor(score / 3000) // Scaled for max 10k rewards
+        pBlocksEarned: Math.floor(score / 3000) // Scaled for max 10k rewards
       });
     }
 
